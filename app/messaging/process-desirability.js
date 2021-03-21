@@ -1,12 +1,16 @@
 const { sendCalculateScore } = require('./senders')
+const cache = require('../cache')
 
 module.exports = async function (msg, projectDetailsReceiver) {
   try {
-    const { body } = msg
+    const { body, correlationId } = msg
     console.log('Received project details message:')
     console.log(body)
+    console.log(correlationId)
 
-    await sendCalculateScore({ test: 'Calculate the desirability' })
+    await cache.setProjectDetails(correlationId, body)
+
+    await sendCalculateScore({ test: 'Calculate the desirability' }, correlationId)
 
     await projectDetailsReceiver.completeMessage(msg)
   } catch (err) {
